@@ -1,0 +1,1 @@
+## Clean Bevy project with Default Plugin
