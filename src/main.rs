@@ -18,15 +18,22 @@ fn spawn_camera(mut commands: Commands) {
     });
 }
 
-// adding basic scene to look at  (Pbr stands for - Physically Based Rendering)
+// adding basic scene to look at
 fn spawn_basic_scene(
     mut commands: Commands,
     mut meshes: ResMut<Assets<Mesh>>,
-    // mut materials: ResMut<Asset<StandardMaterial>>,
+    mut materials: ResMut<Assets<StandardMaterial>>
 ) {
     commands.spawn(PbrBundle {
         mesh: meshes.add(Mesh::from(shape::Plane {size: 5.0, subdivisions: 0}
         )),
+        material: materials.add(Color::rgb(0.3, 0.5, 0.3).into()),
+        ..default()
+    });
+    commands.spawn(PbrBundle {
+        mesh: meshes.add(Mesh::from(shape::Cube {size: 1.0})),
+        material: materials.add(Color::rgb(0.67, 0.84, 0.92).into()),
+        transform: Transform::from_xyz(0.0, 0.5, 0.0),
         ..default()
     });
 }
