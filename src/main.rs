@@ -5,12 +5,18 @@ use bevy_third_person_camera::*;
 fn main() {
     App::new()
         .add_plugins(DefaultPlugins)
-        .add_systems(Startup, spawn_camera)
-        .add_systems(Startup, spawn_basic_scene)
         .add_plugins(WorldInspectorPlugin::new())
         .add_plugins(ThirdPersonCameraPlugin)
+        .add_systems(Startup, spawn_camera)
+        .add_systems(Startup, spawn_basic_scene)
+        .add_systems(Update, keyboard_input)
         .run(); 
 }
+
+// marker components
+#[derive(Component)]
+struct Player;
+
 
 
 // spawn camera
@@ -47,7 +53,7 @@ fn spawn_basic_scene(
         transform: Transform::from_xyz(0.0, 0.5, 0.0),
         ..default()
     })
-    .insert(Name::new("Cube"));
+    .insert((Player, ThirdPersonCameraTarget));
     // adding light
     commands.spawn(PointLightBundle {
         point_light: PointLight {
@@ -59,4 +65,29 @@ fn spawn_basic_scene(
         ..default()
     })
     .insert(Name::new("Light"));
+}
+
+fn keyboard_input(keys: Res<Input<KeyCode>>, mut query: Query<&mut Transform, With<Player>>) {
+    for mut transform in query.iter_mut() {
+        let move_speed = 5.0;
+        let delta_time = 0.016;
+
+        if keys.pressed(KeyCode::W) {
+            transform.translation.z -= move_speed * delta_time;
+        }
+
+        if keys.pressed(KeyCode::S) {
+            transform.translation.z += move_speed * delta_time;
+        }
+
+        if keys.pressed(KeyCode::A) {
+            transform.translation.x -= move_speed * delta_time;
+        }
+
+        if keys.pressed(KeyCode::D) {
+            transform.translation.x += move_speed * delta_time;
+        }
+
+        // You can add more controls for other directions if needed
+    }
 }
