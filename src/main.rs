@@ -1,5 +1,6 @@
 use bevy::prelude::*;
 use bevy_inspector_egui::quick::WorldInspectorPlugin;
+use bevy_third_person_camera::*;
 
 fn main() {
     App::new()
@@ -7,16 +8,20 @@ fn main() {
         .add_systems(Startup, spawn_camera)
         .add_systems(Startup, spawn_basic_scene)
         .add_plugins(WorldInspectorPlugin::new())
+        .add_plugins(ThirdPersonCameraPlugin)
         .run(); 
 }
 
 
 // spawn camera
 fn spawn_camera(mut commands: Commands) {
-    commands.spawn(Camera3dBundle {
-        transform: Transform::from_xyz(-2.0, 2.5, 5.0).looking_at(Vec3::ZERO, Vec3::Y),
-        ..default() 
-    })
+    commands.spawn((
+        ThirdPersonCamera {
+            zoom: Zoom::new(1.5, 60.0), //min and max distance
+            ..default()
+        },
+        Camera3dBundle::default()
+    ))
     .insert(Name::new("Camera"));
 }
 
