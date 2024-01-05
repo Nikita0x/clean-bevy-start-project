@@ -7,15 +7,40 @@ fn main() {
         .add_plugins(DefaultPlugins)
         .add_plugins(WorldInspectorPlugin::new())
         .add_plugins(ThirdPersonCameraPlugin)
+        .add_plugins(PlayerPlugin)
         .add_systems(Startup, spawn_camera)
         .add_systems(Startup, spawn_basic_scene)
         .add_systems(Update, keyboard_input)
         .run(); 
 }
 
-// marker components
 #[derive(Component)]
 struct Player;
+
+#[derive(Bundle)]
+struct PlayerBundle {
+    model: SceneBundle,
+    id: Player,
+}
+
+pub struct PlayerPlugin;
+impl Plugin for PlayerPlugin {
+    fn build(&self, app: &mut App) {
+        app.add_systems(Startup, spawn_player);
+    }
+}
+
+fn spawn_player(mut commands: Commands, asset_server: Res<AssetServer>) {
+    commands.spawn(PlayerBundle {
+        model: SceneBundle {
+            scene: asset_server.load("Player.glb#Scene0"),
+            transform: Transform::from_xyz(0.0, 1.1, 0.0),
+            ..default()
+        },
+        id: Player,
+    })
+    .insert((Player, ThirdPersonCameraTarget));
+}
 
 
 
@@ -46,15 +71,6 @@ fn spawn_basic_scene(
         ..default()
     })
     .insert(Name::new("Ground"));
-    // adding Cube
-    commands.spawn(PbrBundle {
-        mesh: meshes.add(Mesh::from(shape::Cube {size: 1.0})),
-        material: materials.add(Color::rgb(0.67, 0.84, 0.92).into()),
-        transform: Transform::from_xyz(0.0, 0.5, 0.0),
-        ..default()
-    })
-    .insert((Player, ThirdPersonCameraTarget));
-    // adding light
     commands.spawn(PointLightBundle {
         point_light: PointLight {
             intensity: 1500.0,
