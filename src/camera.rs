@@ -1,5 +1,4 @@
 use bevy::prelude::*;
-use bevy_third_person_camera::*;
 
 // spawn camera
 pub fn spawn_camera(mut commands: Commands) {
@@ -18,6 +17,7 @@ pub fn spawn_camera(mut commands: Commands) {
 }
 
 pub fn update_camera(keys: Res<Input<KeyCode>>, mut query: Query<&mut Transform, With<Camera>>, time: Res<Time>) {
+
     for mut transform in query.iter_mut() {
         let move_speed = 8.0;
 
@@ -38,4 +38,22 @@ pub fn update_camera(keys: Res<Input<KeyCode>>, mut query: Query<&mut Transform,
         }
 
     }
+}
+
+pub fn zoom_perspective(
+    mut query_camera: Query<&mut Projection, With<Camera>>,
+    keys: Res<Input<KeyCode>>
+) {
+    // assume perspective. do nothing if orthographic.
+    let Projection::Perspective(persp) = query_camera.single_mut().into_inner() else {
+        return;
+    };
+
+    if keys.pressed(KeyCode::Q) {
+        persp.fov += 0.01;
+    }
+    if keys.pressed(KeyCode::E) {
+        persp.fov -= 0.01;
+    }
+    
 }

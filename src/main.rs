@@ -11,6 +11,7 @@ use player::PlayerPlugin;
 
 use camera::spawn_camera;
 use camera::update_camera;
+use camera::zoom_perspective;
 
 use movement::keyboard_input;
 
@@ -26,6 +27,7 @@ fn main() {
         .add_systems(Startup, spawn_basic_scene)
         .add_systems(Update, keyboard_input)
         .add_systems(Update, update_camera)
+        .add_systems(Update, zoom_perspective)
         .run(); 
 }
 
