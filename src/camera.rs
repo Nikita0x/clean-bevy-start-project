@@ -1,4 +1,5 @@
 use bevy::prelude::*;
+use bevy::input::mouse::*;
 
 // spawn camera
 pub fn spawn_camera(mut commands: Commands) {
@@ -42,18 +43,27 @@ pub fn update_camera(keys: Res<Input<KeyCode>>, mut query: Query<&mut Transform,
 
 pub fn zoom_perspective(
     mut query_camera: Query<&mut Projection, With<Camera>>,
-    keys: Res<Input<KeyCode>>
+    keys: Res<Input<KeyCode>>,
+    mut scroll_evr: EventReader<MouseWheel>,
 ) {
     // assume perspective. do nothing if orthographic.
     let Projection::Perspective(persp) = query_camera.single_mut().into_inner() else {
         return;
     };
 
-    if keys.pressed(KeyCode::Q) {
-        persp.fov += 0.01;
-    }
-    if keys.pressed(KeyCode::E) {
-        persp.fov -= 0.01;
-    }
-    
+    for ev in scroll_evr.read() {
+        match ev.unit {
+            MouseScrollUnit::Line => {
+                if ev.y > 0.0 && persp.fov < 2.0 {
+                    persp.fov += 0.08;
+                } else if ev.y < 0.0 && persp.fov > 0.5 {
+                    persp.fov -= 0.08;
+                }
+                println!("Scroll (line units): vertical: {}", ev.y);
+            }
+            MouseScrollUnit::Pixel => {
+                println!("Scroll (pixel units): vertical: {}", ev.y);
+            }
+        }
+    };
 }
