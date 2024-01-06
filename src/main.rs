@@ -10,6 +10,7 @@ mod scene;
 use player::PlayerPlugin;
 
 use camera::spawn_camera;
+use camera::update_camera;
 
 use movement::keyboard_input;
 
@@ -24,6 +25,7 @@ fn main() {
         .add_systems(Startup, spawn_camera)
         .add_systems(Startup, spawn_basic_scene)
         .add_systems(Update, keyboard_input)
+        .add_systems(Update, update_camera)
         .run(); 
 }
 
